@@ -2,11 +2,10 @@ package com.informatario.shoppingcart.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -14,12 +13,13 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private String apellido;
     private String direccion;
     @CreationTimestamp
     private LocalDate fechaCreacion;
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Carrito> carritos = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -59,6 +59,20 @@ public class Usuario {
 
     public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public List<Carrito> getCarritos() {
+        return carritos;
+    }
+
+    public void agregarCarrito(Carrito carrito) {
+        carritos.add(carrito);
+        carrito.setUsuario(this);
+    }
+
+    public void removerCarrito(Carrito carrito) {
+        carritos.remove(carrito);
+        carrito.setUsuario(null);
     }
 
     @Override
